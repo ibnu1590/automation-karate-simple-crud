@@ -1,59 +1,45 @@
-@Crud
-Feature: sample api crud
+#running by tag  mvn clean test "-Dkarate.options=--tags=@Testcase1,@Testcase2,@Testcase3"
+@Module1 @Regression
+Feature: sample karate test script
+  for help, see: https://github.com/karatelabs/karate/wiki/IDE-Support
 
   Background:
-    * url 'https://642afabeb11efeb759a7beff.mockapi.io/test/'
+    * url 'https://jsonplaceholder.typicode.com'
 
-  Scenario: add new post
-    * def NewPost =
-    """
-    {
-        "name": "ibn test add"
-    }
-    """
-    Given path 'post'
-    And request NewPost
+  @Testcase1
+  Scenario: get all users and then get the first user by id
+    Given path 'users'
+    When method get
+    Then status 200
+
+  @Testcase2
+  Scenario: create a user and then get it by id
+    * def user =
+      """
+      {
+        "name": "Test User",
+        "username": "testuser",
+        "email": "test@user.com",
+        "address": {
+          "street": "Has No Name",
+          "suite": "Apt. 123",
+          "city": "Electri",
+          "zipcode": "54321-6789"
+        }
+      }
+      """
+
+    Given url 'https://jsonplaceholder.typicode.com/users'
+    And request user
     When method post
     Then status 201
 
-    * def resAdd = response
-    * print 'Successfully add new Post : ', resAdd
-
-  Scenario: get all post
-    Given path 'post'
-    When method get
-    Then status 200
-
-  Scenario: get specific post id
-    Given url 'https://642afabeb11efeb759a7beff.mockapi.io/test/post/6'
-    When method get
-    Then status 200
-
     * def id = response.id
-    * def name = response.name
-    * print 'This is the Post that you want: ', id, " => " ,name
+    * print 'created id is: ', id
 
     Given path id
-
-  Scenario: edit the post
-    * def DataPost =
-    """
-    {
-        "name": "ibn test edit"
-    }
-    """
-    Given url 'https://642afabeb11efeb759a7beff.mockapi.io/test/post/6'
-    And request DataPost
-    When method put
-    Then status 200
-
-  Scenario: delete post by id
-    Given url 'https://642afabeb11efeb759a7beff.mockapi.io/test/post/3'
-    When method delete
-    Then status 200
-
-    * def res = response
-    * print 'The response is : ', res
-
+    # When method get
+    # Then status 200
+    # And match response contains user
 
 
